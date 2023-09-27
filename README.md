@@ -9,7 +9,7 @@
 </p>
 <h3 align="center">LInjector | Open-source Executor Interface for Roblox.</h3>
 
-<h1>THIS REPOSITORY HAS BEEN MOVED TO (THIS NEW ACCOUNT)[https://github.com/NotExcelz/LInjector]</h1>
+<h1>THIS REPOSITORY HAS BEEN MOVED TO https://github.com/NotExcelz/LInjector</h1>
 
 <hr/>
 
