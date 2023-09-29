@@ -1,5 +1,6 @@
 ﻿using LInjector.Classes;
 using LInjector.WPF.Classes;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -26,6 +27,8 @@ namespace LInjector.Windows
 
         private readonly HttpClient client = new HttpClient();
         private readonly WebClient webCl = new WebClient();
+
+        internal string ScriptListPath = ".\\scripts\\";
 
 
         Storyboard StoryBoard = new Storyboard();
@@ -155,11 +158,6 @@ namespace LInjector.Windows
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            ToggleControls();
-        }
-
-        public void ToggleControls()
-        {
             if (IsSettingsShown == false)
             {
                 if (IsScriptsShown == true) { return; }
@@ -225,12 +223,12 @@ namespace LInjector.Windows
             }
             catch (Exception ex)
             {
-                ThreadBox.MsgThread("Couldn't initialize Fluxus API\nException:\n"
+                ThreadBox.MsgThread("Couldn't initialize Fluxus Interface\nException:\n"
                                                    + ex.Message
                                                    + "\nPlease, share it on Discord.",
                     "[ERROR] LInjector", MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
-                _ = Notifications.Fire(StatusListBox, "Couldn't initialize Fluxus API.", NotificationLabel);
+                _ = Notifications.Fire(StatusListBox, "Couldn't initialize Fluxus Interface.", NotificationLabel);
             }
 
             if (ConfigHandler.topmost)
@@ -239,8 +237,9 @@ namespace LInjector.Windows
             }
 
             TabSystemz.Visibility = Visibility.Visible;
-            RefreshScriptList();
             await VersionChecker.CheckVersionUWP();
+            if (RegistryHandler.GetValue("ScriptListPath", "0").Length != 0) { ScriptListPath = RegistryHandler.GetValue("ScriptListPath", "0"); }
+            RefreshScriptList();
             LoadSavedTabs();
             ParseConfig();
             LogToConsole.Log("Welcome to LInjector.", ConsoleLogList);
@@ -365,7 +364,7 @@ namespace LInjector.Windows
 
         private void ScriptListHolder_Loaded(object sender, RoutedEventArgs e)
         {
-            DirectoryInfo ScriptsFolder = new DirectoryInfo(".\\scripts");
+            DirectoryInfo ScriptsFolder = new DirectoryInfo(ScriptListPath);
             FileInfo[] Files = ScriptsFolder.GetFiles("*.*");
             foreach (FileInfo Script in Files)
             {
@@ -378,7 +377,7 @@ namespace LInjector.Windows
             ScriptListHolder.Items.Clear();
 
             string searchQuery = SearchScriptsBox.Text.ToLower();
-            DirectoryInfo scriptsFolder = new DirectoryInfo(".\\scripts");
+            DirectoryInfo scriptsFolder = new DirectoryInfo(ScriptListPath);
 
             foreach (FileInfo script in scriptsFolder.GetFiles())
             {
@@ -396,7 +395,7 @@ namespace LInjector.Windows
             {
                 if (this.ScriptListHolder.SelectedIndex != -1)
                 {
-                    string scriptfolder = ".\\scripts\\";
+                    string scriptfolder = ScriptListPath;
                     object selectedItem = this.ScriptListHolder.SelectedItem;
                     if (this.ScriptListHolder.Items.Count != 0)
                     {
@@ -457,7 +456,7 @@ namespace LInjector.Windows
             {
                 FileName = await TabSystemz.GetCurrentTabTitle(),
                 Title = "Save to File | LInjector",
-                Filter = "Script Files (*.txt;*.lua;*.luau)|*.txt;*.lua;*.luau|All files (*.*)|*.*"
+                Filter = "Script Files (*.txt;*.lua;*.luau)|*.txt;*.lua;*.luau|All files (*.*)|*.*",
             };
 
             if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -515,6 +514,22 @@ namespace LInjector.Windows
             {
                 IsInfoShown = false;
                 InformationGrid.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void ChangeScriptsFolder_Click(object sender, RoutedEventArgs e)
+        {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog
+            {
+                IsFolderPicker = true,
+                Multiselect = false,
+            };
+
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                RegistryHandler.SetValue("ScriptListPath", dialog.FileName);
+                ScriptListPath = dialog.FileName;
+                RefreshScriptList();
             }
         }
 

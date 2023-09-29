@@ -52,8 +52,6 @@ namespace LInjector.Classes
 
                     RegistryHandler.SetValue("FluxVersion", GitHub_Flux);
                     RegistryHandler.SetValue("ModuleVersion", GitHub_Module);
-
-                    CustomCw.Cw("Registry values in Computer\\HKEY_CURRENT_USER\\SOFTWARE\\LInjector saved", false, "info");
                 }
 
                 return;
@@ -167,6 +165,30 @@ namespace LInjector.Classes
                 Console.WriteLine("Error in SetValue: " + ex.Message);
             }
         }
+
+        public static bool LookValue(string name)
+        {
+            try
+            {
+                var registryAddress = "SOFTWARE\\LInjector";
+                using (RegistryKey reg = Registry.CurrentUser.OpenSubKey(registryAddress))
+                {
+                    if (reg == null)
+                    {
+                    }
+
+                    string[] valueNames = reg.GetValueNames();
+
+                    return valueNames.Contains(name);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in LookValue: " + ex.Message);
+                return false;
+            }
+        }
+
     }
 
 
@@ -227,6 +249,11 @@ namespace LInjector.Classes
             if (!Directory.Exists(Files.savedtabspath))
             {
                 Directory.CreateDirectory(Files.savedtabspath);
+            }
+
+            if (RegistryHandler.LookValue("ScriptListPath") == false)
+            {
+                RegistryHandler.SetValue("ScriptListPath", ".\\scripts\\");
             }
         }
 
