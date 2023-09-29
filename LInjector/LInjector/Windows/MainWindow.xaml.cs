@@ -400,7 +400,7 @@ namespace LInjector.Windows
                     if (this.ScriptListHolder.Items.Count != 0)
                     {
                         TabSystemz.ChangeCurrentTabTitle(selectedItem.ToString());
-                        TabSystemz.current_monaco().SetText(File.ReadAllText(scriptfolder + (selectedItem != null ? selectedItem.ToString() : (string)null)));
+                        TabSystemz.current_monaco().SetText(File.ReadAllText(scriptfolder + "\\" + (selectedItem != null ? selectedItem.ToString() : (string)null)));
                     }
                 }
                 else
