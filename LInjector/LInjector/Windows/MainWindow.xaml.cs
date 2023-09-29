@@ -393,19 +393,30 @@ namespace LInjector.Windows
         {
             try
             {
-                if (this.ScriptListHolder.SelectedIndex != -1)
+                if (TabSystemz.maintabs.Items.Count != 0)
+                {
+                    if (this.ScriptListHolder.SelectedIndex != -1)
+                    {
+                        string scriptfolder = ScriptListPath;
+                        object selectedItem = this.ScriptListHolder.SelectedItem;
+                        if (this.ScriptListHolder.Items.Count != 0)
+                        {
+                            TabSystemz.ChangeCurrentTabTitle(selectedItem.ToString());
+                            TabSystemz.current_monaco().SetText(File.ReadAllText(scriptfolder + "\\" + (selectedItem != null ? selectedItem.ToString() : (string)null)));
+                        }
+                        else
+                        {
+                        }
+                    }
+                    else
+                    {
+                        _ = Notifications.Fire(StatusListBox, "No scripts were found.", NotificationLabel);
+                    }
+                } else
                 {
                     string scriptfolder = ScriptListPath;
                     object selectedItem = this.ScriptListHolder.SelectedItem;
-                    if (this.ScriptListHolder.Items.Count != 0)
-                    {
-                        TabSystemz.ChangeCurrentTabTitle(selectedItem.ToString());
-                        TabSystemz.current_monaco().SetText(File.ReadAllText(scriptfolder + "\\" + (selectedItem != null ? selectedItem.ToString() : (string)null)));
-                    }
-                }
-                else
-                {
-                    _ = Notifications.Fire(StatusListBox, "No scripts were found.", NotificationLabel);
+                    TabSystemz.add_tab_with_text(File.ReadAllText(scriptfolder + "\\" + (selectedItem != null ? selectedItem.ToString() : (string)null)), selectedItem.ToString());
                 }
             }
             catch { }
