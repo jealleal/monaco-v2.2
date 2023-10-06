@@ -130,7 +130,6 @@ for _, name in next, Functions do
       for _, Arg in next, Args do
          String ..= " "..tostring(Arg)
       end
-	   print(String)
       STDExport(('%s%s'):format(name, String))
    end)
 end
