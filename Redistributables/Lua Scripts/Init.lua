@@ -126,10 +126,11 @@ local Functions={
 
 for _, name in next, Functions do
    Export(name,function(...)
-      local String, args="",table.pack(...)
-      for i=1, args.n do
-         String=("%s|||%s"):format(String, tostring(args[i]))
+      local String,Args = "|||", {...}
+      for _, Arg in next, Args do
+         String ..= " "..tostring(Arg)
       end
+	   print(String)
       STDExport(('%s%s'):format(name, String))
    end)
 end
