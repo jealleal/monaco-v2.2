@@ -91,5 +91,3 @@ We urge all users to use LInjector only for development and utility purposes and
 <hr/>
 
 — Made with love by Excel and Depso. <3
-
-ᵈᵉᵛʸ ʷᵃˢ ʰᵉʳᵉ ᵛ²
