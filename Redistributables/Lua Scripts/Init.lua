@@ -10,11 +10,11 @@
 local EXPLOIT_NAME = "LInjector"
 local EXLPOIT_VERSION = "6.10.2023"
 
-local genv = getgenv()
+--[[local genv = getgenv()
 if genv[EXPLOIT_NAME] then
    return script:Remove()
 end
-genv[EXPLOIT_NAME] = true
+genv[EXPLOIT_NAME] = true]]
 
 --- Libraries
 local HashIngLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/zzerexx/scripts/main/HashLib.lua"))()
@@ -49,24 +49,23 @@ end
 
 ---------
 
-local Oldcrypt = crypt
-local NewCrypt = Oldcrypt
+setreadonly(crypt, false)
 
-NewCrypt.encrypt = function(cipher, data, key, nonce)
+crypt.encrypt = function(cipher, data, key, nonce)
    cipher = cipher:lower()
    if cipher:find("eax") or cipher:find("bf") then
       return ""
    end
    return crypt.custom_encrypt(data, key, nonce, ciphers[cipher:gsub("_", "-")])
 end
-NewCrypt.decrypt = function(cipher, data, key, nonce)
+crypt.decrypt = function(cipher, data, key, nonce)
    cipher = cipher:lower()
    if cipher:find("eax") or cipher:find("bf") then
       return ""
    end
    return crypt.custom_decrypt(data, key, nonce, ciphers[cipher:gsub("_", "-")])
 end
-NewCrypt.hash = function(alg, data)
+crypt.hash = function(alg, data)
    alg = alg:lower():gsub("_", "-")
 
    local HashLib = table.find(hashlibalgs, alg)
@@ -77,14 +76,16 @@ NewCrypt.hash = function(alg, data)
       return hash[alg:gsub("-", "_")](data)
    end
    if SwLib then
-      return Oldcrypt.hash(data, alg):lower()
+      return crypt.hash(data, alg):lower()
    end
 end
-NewCrypt.derive = function(_, len)
-   return Oldcrypt.generatebytes(len)
+crypt.derive = function(_, len)
+   return crypt.generatebytes(len)
 end
-NewCrypt.random = Oldcrypt.generatebytes 
-NewCrypt.generatebytes = Oldcrypt.generatebytes
+crypt.random = crypt.generatebytes 
+crypt.generatebytes = crypt.generatebytes
+
+setreadonly(crypt, true)
 
 local oldRequest
 oldRequest = hookfunction(request, function(Arguments)
@@ -99,9 +100,6 @@ oldRequest = hookfunction(request, function(Arguments)
     })
 end)
 
-Export("custom", NewCrypt)
-Export("crypt", NewCrypt)
-Export("crypto", NewCrypt)
 
 Export("identifyexecutor", function()
    return EXPLOIT_NAME, EXLPOIT_VERSION
@@ -111,11 +109,6 @@ Export("getexecutorname", function()
 end)
 Export("disassemble", disassemble)
 Export("decompile", disassemble)
- 
-
-setreadonly(crypt, true)
-setreadonly(crypto, true)
-setreadonly(custom, true)
 
 local Functions={
   "messagebox",
