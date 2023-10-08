@@ -8,7 +8,7 @@
 *
 * ]]
 local EXPLOIT_NAME = "LInjector"
-local EXLPOIT_VERSION = "6.10.2023"
+local EXLPOIT_VERSION = "08.10.2023"
 
 --[[local genv = getgenv()
 if genv[EXPLOIT_NAME] then
@@ -154,8 +154,6 @@ end)
  * ░▒█▄▄█░▄█▄░▀░░▀░█▄█░▀▀▀░▀▀▀░░▀░░░▀▀░░▀░▀▀░░░▒█░░░░░▀▀▀░▀░░▀░▀▀▀░░▀░░▀▀▀░░▀▀░░▀░░▀░▀▀▀░░
  *
  * Created by Depso
- *
- * 
 
  if linjector then
    script:Remove()

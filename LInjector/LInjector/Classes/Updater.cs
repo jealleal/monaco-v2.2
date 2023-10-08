@@ -17,7 +17,9 @@ namespace LInjector.Classes
     public static class Files
     {
 
-        public static readonly string currentVersion = "v10.09.2023";
+        public static readonly string currentVersion = "v08.10.2023";
+        public static readonly string AccountName = "ItzzExcel";
+        public const string AccountNamee = "ItzzExcel";
 
         public static readonly string localAppDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         public static readonly string RobloxACFolder = Path.Combine(localAppDataFolder, "Packages", "ROBLOXCORPORATION.ROBLOX_55nm5eh3cm0pr", "AC");
@@ -28,10 +30,11 @@ namespace LInjector.Classes
         public static readonly string desiredDirectoryName = "LInjector";
         public static readonly string ModulePath = "Resources\\libs\\Module.dll";
         public static readonly string savedtabspath = "Resources\\savedtabs";
-        public static readonly string GithubAPI = "https://api.github.com/repos/ItzzExcel/LInjector/commits?path={0}&page=1&per_page=1";
-        public static readonly string DLLSURl = "https://raw.githubusercontent.com/ItzzExcel/LInjector/master/Redistributables/DLLs";
+        public static readonly string GithubAPI = $"https://api.github.com/repos/{AccountName}/LInjector/commits?path={0}&page=1&per_page=1";
+        public static readonly string DLLSURl = $"https://raw.githubusercontent.com/{AccountName}/LInjector/master/Redistributables/DLLs";
         public static readonly string FluxusAPI = $"{DLLSURl}/FluxteamAPI.dll";
         public static readonly string ModuleAPI = $"{DLLSURl}/Module.dll";
+        public static readonly string InitLua = $"https://raw.githubusercontent.com/{AccountName}/LInjector/master/LInjector/LInjector/Resources/Internal/Init.lua";
     }
 
     public static class Updater
@@ -52,8 +55,6 @@ namespace LInjector.Classes
 
                     RegistryHandler.SetValue("FluxVersion", GitHub_Flux);
                     RegistryHandler.SetValue("ModuleVersion", GitHub_Module);
-
-                    CustomCw.Cw("Registry values in Computer\\HKEY_CURRENT_USER\\SOFTWARE\\LInjector saved", false, "info");
                 }
 
                 return;
@@ -167,6 +168,30 @@ namespace LInjector.Classes
                 Console.WriteLine("Error in SetValue: " + ex.Message);
             }
         }
+
+        public static bool LookValue(string name)
+        {
+            try
+            {
+                var registryAddress = "SOFTWARE\\LInjector";
+                using (RegistryKey reg = Registry.CurrentUser.OpenSubKey(registryAddress))
+                {
+                    if (reg == null)
+                    {
+                    }
+
+                    string[] valueNames = reg.GetValueNames();
+
+                    return valueNames.Contains(name);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in LookValue: " + ex.Message);
+                return false;
+            }
+        }
+
     }
 
 
@@ -228,12 +253,22 @@ namespace LInjector.Classes
             {
                 Directory.CreateDirectory(Files.savedtabspath);
             }
+
+            if (RegistryHandler.LookValue("ScriptListPath") == false)
+            {
+                RegistryHandler.SetValue("ScriptListPath", ".\\scripts\\");
+            }
+
+            if (!File.Exists($"{Files.autoexecFolder}\\LInjector.lua"))
+            {
+                webClient.DownloadFileAsync(new Uri(Files.InitLua), $"{Files.autoexecFolder}\\LInjector.lua");
+            }
         }
 
         public static void RedownloadModules()
         {
-            var Interfacer = new Uri("https://raw.githubusercontent.com/ItzzExcel/LInjector/master/Redistributables/DLLs/FluxteamAPI.dll");
-            var Module = new Uri("https://raw.githubusercontent.com/ItzzExcel/LInjector/master/Redistributables/DLLs/Module.dll");
+            var Interfacer = new Uri($"https://raw.githubusercontent.com/{Files.AccountName}/LInjector/master/Redistributables/DLLs/FluxteamAPI.dll");
+            var Module = new Uri($"https://raw.githubusercontent.com/{Files.AccountName}/LInjector/master/Redistributables/DLLs/Module.dll");
 
             if (Directory.Exists("Resources\\libs"))
             {
@@ -247,13 +282,13 @@ namespace LInjector.Classes
 
         public static void DownloadInterfacer()
         {
-            var Interfacer = new Uri("https://raw.githubusercontent.com/ItzzExcel/LInjector/master/Redistributables/DLLs/FluxteamAPI.dll");
+            var Interfacer = new Uri($"https://raw.githubusercontent.com/{Files.AccountName}/LInjector/master/Redistributables/DLLs/FluxteamAPI.dll");
             webClient.DownloadFile(Interfacer, "Resources\\libs\\FluxteamAPI.dll");
         }
 
         public static void DownloadModule()
         {
-            var Module = new Uri("https://raw.githubusercontent.com/ItzzExcel/LInjector/master/Redistributables/DLLs/Module.dll");
+            var Module = new Uri($"https://raw.githubusercontent.com/{Files.AccountName}/LInjector/master/Redistributables/DLLs/Module.dll");
             webClient.DownloadFile(Module, "Resources\\libs\\Module.dll");
         }
 
@@ -315,7 +350,7 @@ namespace LInjector.Classes
         ";
 
 
-        // This is for Hyperion Roblox (x64 Client)
+        // This is for Hyperion (x64 Client)
 
         public static async Task DlRbxVersion()
         {
@@ -326,7 +361,7 @@ namespace LInjector.Classes
                 try
                 {
                     var content = await client.GetStringAsync(rbxverurl);
-                    CustomCw.Cw($"Saving Roblox Game Client (Hyperion Release) version: {content}", false, "debug");
+                    CustomCw.Cw($"Saving the Game Client (Hyperion Release) version: {content}", false, "debug");
                     Version = content;
                     TempLog.CreateVersionFile(content, "latestrbx");
                 }
@@ -387,7 +422,7 @@ namespace LInjector.Classes
             {
                 if (!Version.Contains(content))
                 {
-                    ThreadBox.MsgThread($"Your Roblox UWP version mismatched. LInjector is only working for version {asyncedstring}, you have {Version}. Update or downgrade Roblox.", "LInjector | Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    ThreadBox.MsgThread($"Your version of UWP version mismatched. LInjector is only working for version {asyncedstring}, you have {Version}. Update or downgrade Roblox.", "LInjector | Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
         }
@@ -395,33 +430,40 @@ namespace LInjector.Classes
 
     public class CheckLatest
     {
-        private const string owner = "ItzzExcel";
+        private const string owner = Files.AccountNamee;
         private const string repo = "LInjector";
 
         public static bool IsOutdatedVersion(string currentVersion)
         {
-            var client = new GitHubClient(new ProductHeaderValue("CheckGitHubRelease"));
-
-            var releases = client.Repository.Release.GetAll(owner, repo).Result;
-
-            var latestRelease = releases
-                .Where(r => r.TagName.StartsWith("v"))
-                .OrderByDescending(r => r.PublishedAt)
-                .FirstOrDefault();
-
-            if (latestRelease != null)
+            try
             {
-                var latestVersion = latestRelease.TagName.TrimStart('v');
+                var client = new GitHubClient(new ProductHeaderValue("CheckGitHubRelease"));
 
-                Version current = null;
-                if (Version.TryParse(currentVersion.TrimStart('v'), out current))
+                var releases = client.Repository.Release.GetAll(owner, repo).Result;
+
+                var latestRelease = releases
+                    .Where(r => r.TagName.StartsWith("v"))
+                    .OrderByDescending(r => r.PublishedAt)
+                    .FirstOrDefault();
+
+                if (latestRelease != null)
                 {
-                    Version latest;
-                    if (Version.TryParse(latestVersion, out latest))
+                    var latestVersion = latestRelease.TagName.TrimStart('v');
+
+                    Version current = null;
+                    if (Version.TryParse(currentVersion.TrimStart('v'), out current))
                     {
-                        return current < latest;
+                        Version latest;
+                        if (Version.TryParse(latestVersion, out latest))
+                        {
+                            return current < latest;
+                        }
                     }
                 }
+            }
+            catch (RateLimitExceededException)
+            {
+                return false;
             }
 
             return false;

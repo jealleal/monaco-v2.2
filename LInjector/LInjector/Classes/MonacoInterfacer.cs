@@ -1,10 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using LInjector.Classes;
+using Microsoft.Web.WebView2.Wpf;
+using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 
 namespace LInjector.WPF.Classes
 {
-    public class monaco_api : Microsoft.Web.WebView2.Wpf.WebView2
+    public class monaco_api : WebView2
     {
         // Thanks to parex for this awesome base!
 
@@ -20,7 +22,11 @@ namespace LInjector.WPF.Classes
 
         public monaco_api(string Text)
         {
-            this.Source = new Uri("https://itzzexcel.github.io/LInjector/");
+            if (Files.AccountName == "ItzzExcel")
+                this.Source = new Uri($"https://{Files.AccountName.ToLower()}.github.io/LInjector");
+            else if (Files.AccountName == "NotExcelz")
+                this.Source = new Uri($"https://{Files.AccountName.ToLower()}.github.io/LInjector/Monaco");
+
             this.CoreWebView2InitializationCompleted += monaco_api_CoreWebView2InitializationCompleted;
             this.ToSetText = Text;
         }
@@ -39,6 +45,8 @@ namespace LInjector.WPF.Classes
             this.CoreWebView2.WebMessageReceived += CoreWebView2_WebMessageReceived;
             this.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
             this.CoreWebView2.Settings.AreDevToolsEnabled = false;
+            this.CoreWebView2.Settings.IsZoomControlEnabled = false;
+            this.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
         }
 
         private void CoreWebView2_WebMessageReceived(object sender, Microsoft.Web.WebView2.Core.CoreWebView2WebMessageReceivedEventArgs e) => LatestRecievedText = e.TryGetWebMessageAsString();
@@ -62,13 +70,14 @@ namespace LInjector.WPF.Classes
             }
             return string.Empty;
         }
+
         public async void SetText(string text)
         {
-            if (isDOMLoaded)
-                text = text.Replace("\\", "\\\\");
+            text = text.Replace("\\", "\\\\");
             await CoreWebView2.ExecuteScriptAsync("editor.setValue('');");
             await CoreWebView2.ExecuteScriptAsync($"editor.setValue(`{text.Replace("`", "\\`")}`)");
         }
+
         public void AddIntellisense(string label, Types type, string description, string insert)
         {
             if (isDOMLoaded)

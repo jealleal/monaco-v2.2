@@ -158,7 +158,7 @@ namespace LInjector.Classes
 
                 if (arguments[0] == "rconsoleclear")
                 {
-                    Console.Clear();
+                    try { Console.Clear(); } catch { }
                     return;
                 }
 

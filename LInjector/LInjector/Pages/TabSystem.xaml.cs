@@ -14,7 +14,6 @@ namespace LInjector.Pages
         {
             InitializeComponent();
             maintabs.Items.Add(CreateTab("", "Script" + " " + (this.maintabs.Items.Count + 1).ToString()));
-
         }
 
         public monaco_api current_monaco()
@@ -62,10 +61,7 @@ namespace LInjector.Pages
                 case "RemoveT":
                     try
                     {
-                        if (maintabs.Items.Count > 1)
-                        {
-                            maintabs.Items.Remove(maintabs.SelectedItem);
-                        }
+                        maintabs.Items.Remove(maintabs.SelectedItem);
                     }
                     catch { }
                     break;
@@ -84,5 +80,16 @@ namespace LInjector.Pages
                 Content = CreateEditor(content),
                 IsSelected = true,
             };
+
+        private void Clear_Editor(object sender, RoutedEventArgs e)
+        {
+            var x = maintabs.SelectedContent as monaco_api;
+            try
+            {
+                x.SetText("");
+                this.ChangeCurrentTabTitle($"Script {maintabs.Items.Count}");
+            }
+            catch { }
+        }
     }
 }

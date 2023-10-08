@@ -1,5 +1,6 @@
 ﻿using LInjector.Classes;
 using LInjector.WPF.Classes;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -26,6 +27,8 @@ namespace LInjector.Windows
 
         private readonly HttpClient client = new HttpClient();
         private readonly WebClient webCl = new WebClient();
+
+        internal string ScriptListPath = ".\\scripts\\";
 
 
         Storyboard StoryBoard = new Storyboard();
@@ -155,14 +158,9 @@ namespace LInjector.Windows
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            ToggleControls();
-        }
-
-        public void ToggleControls()
-        {
             if (IsSettingsShown == false)
             {
-                if (IsInfoShown == true || IsScriptsShown == true) { return; }
+                if (IsScriptsShown == true) { return; }
                 IsSettingsShown = true;
                 TabSystemz.Visibility = Visibility.Collapsed;
                 SettingsGrid.Visibility = Visibility.Visible;
@@ -198,7 +196,9 @@ namespace LInjector.Windows
                     }
                     else
                     {
-                        _ = Notifications.Fire(StatusListBox, "Remember to before running a script", NotificationLabel);
+                        Inject();
+                        await Task.Delay(1500);
+                        FluxInterfacing.run_script(FluxInterfacing.pid, scriptString);
                     }
                 }
                 catch (Exception ex)
@@ -210,14 +210,12 @@ namespace LInjector.Windows
             }
             catch
             {
-                _ = Notifications.Fire(StatusListBox, "I don't know what happened.", NotificationLabel);
+                _ = Notifications.Fire(StatusListBox, "Unknown error.", NotificationLabel);
             }
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            _ = Notifications.Fire(StatusListBox, "Welcome to LInjector [BETA]", NotificationLabel);
-
             try
             {
                 await Updater.CheckForUpdates();
@@ -225,12 +223,12 @@ namespace LInjector.Windows
             }
             catch (Exception ex)
             {
-                ThreadBox.MsgThread("Couldn't initialize Fluxus API\nException:\n"
+                ThreadBox.MsgThread("Couldn't initialize Fluxus Interface\nException:\n"
                                                    + ex.Message
                                                    + "\nPlease, share it on Discord.",
                     "[ERROR] LInjector", MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
-                _ = Notifications.Fire(StatusListBox, "Couldn't initialize Fluxus API.", NotificationLabel);
+                _ = Notifications.Fire(StatusListBox, "Couldn't initialize Fluxus Interface.", NotificationLabel);
             }
 
             if (ConfigHandler.topmost)
@@ -239,11 +237,13 @@ namespace LInjector.Windows
             }
 
             TabSystemz.Visibility = Visibility.Visible;
-            ParseConfig();
+            await VersionChecker.CheckVersionUWP();
+            if (RegistryHandler.GetValue("ScriptListPath", "0").Length != 0) { ScriptListPath = RegistryHandler.GetValue("ScriptListPath", "0"); }
             RefreshScriptList();
-            LogToConsole.Log("Welcome to LInjector.", ConsoleLogList);
-            _ = VersionChecker.CheckVersionUWP();
             LoadSavedTabs();
+            ParseConfig();
+            LogToConsole.Log("Loaded", ConsoleLogList);
+            _ = Notifications.Fire(StatusListBox, "Welcome to LInjector", NotificationLabel);
         }
 
         private void LoadSavedTabs()
@@ -277,17 +277,16 @@ namespace LInjector.Windows
                     try
                     {
 
-                        _ = Notifications.Fire(StatusListBox, "Called Injection API (Powered by Fluxteam)", NotificationLabel);
                         FluxInterfacing.inject();
                         InternalFunctions.RunInternalFunctions();
                         FunctionWatch.runFuncWatch();
                         if (FluxInterfacing.pid > 0)
                         {
-                            LogToConsole.Log($"Injected to Roblox UWP with PID: {FluxInterfacing.pid}", ConsoleLogList);
+                            LogToConsole.Log($"Injected to Windows10Universal.exe with PID: {FluxInterfacing.pid}", ConsoleLogList);
                         }
                         else
                         {
-                            LogToConsole.Log($"Roblox UWP not detected.", ConsoleLogList);
+                            LogToConsole.Log($"Windows10Universal.exe not detected.", ConsoleLogList);
                         }
                     }
                     catch (Exception ex)
@@ -349,7 +348,7 @@ namespace LInjector.Windows
 
         private void GitHubButton_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://github.com/ItzzExcel/LInjector");
+            Process.Start($"https://github.com/${Files.AccountName}/LInjector");
         }
 
         private void DiscordButton_Click(object sender, RoutedEventArgs e)
@@ -364,7 +363,7 @@ namespace LInjector.Windows
 
         private void ScriptListHolder_Loaded(object sender, RoutedEventArgs e)
         {
-            DirectoryInfo ScriptsFolder = new DirectoryInfo(".\\scripts");
+            DirectoryInfo ScriptsFolder = new DirectoryInfo(ScriptListPath);
             FileInfo[] Files = ScriptsFolder.GetFiles("*.*");
             foreach (FileInfo Script in Files)
             {
@@ -377,7 +376,7 @@ namespace LInjector.Windows
             ScriptListHolder.Items.Clear();
 
             string searchQuery = SearchScriptsBox.Text.ToLower();
-            DirectoryInfo scriptsFolder = new DirectoryInfo(".\\scripts");
+            DirectoryInfo scriptsFolder = new DirectoryInfo(ScriptListPath);
 
             foreach (FileInfo script in scriptsFolder.GetFiles())
             {
@@ -389,20 +388,31 @@ namespace LInjector.Windows
             }
         }
 
-
         private void SearchScriptsBox_SelectionChanged(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (this.ScriptListHolder.SelectedIndex != -1)
+                if (TabSystemz.maintabs.Items.Count != 0)
                 {
-                    string scriptfolder = ".\\scripts\\";
-                    object selectedItem = this.ScriptListHolder.SelectedItem;
-                    if (this.ScriptListHolder.Items.Count != 0)
+                    if (this.ScriptListHolder.SelectedIndex != -1)
                     {
-                        TabSystemz.ChangeCurrentTabTitle(selectedItem.ToString());
-                        TabSystemz.current_monaco().SetText(File.ReadAllText(scriptfolder + (selectedItem != null ? selectedItem.ToString() : (string)null)));
+                        string scriptfolder = ScriptListPath;
+                        object selectedItem = this.ScriptListHolder.SelectedItem;
+                        if (this.ScriptListHolder.Items.Count != 0)
+                        {
+                            TabSystemz.ChangeCurrentTabTitle(selectedItem.ToString());
+                            TabSystemz.current_monaco().SetText(File.ReadAllText(scriptfolder + "\\" + (selectedItem != null ? selectedItem.ToString() : (string)null)));
+                        }
+                        else
+                        {
+                        }
                     }
+                }
+                else
+                {
+                    string scriptfolder = ScriptListPath;
+                    object selectedItem = this.ScriptListHolder.SelectedItem;
+                    TabSystemz.add_tab_with_text(File.ReadAllText(scriptfolder + "\\" + (selectedItem != null ? selectedItem.ToString() : (string)null)), selectedItem.ToString());
                 }
             }
             catch { }
@@ -446,19 +456,6 @@ namespace LInjector.Windows
             }
         }
 
-        private void ClearEditor(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var cm = TabSystemz.current_monaco();
-                cm.SetText("");
-                TabSystemz.ChangeCurrentTabTitle($"Script {TabSystemz.maintabs.Items.Count}");
-            }
-            catch (Exception)
-            {
-                _ = Notifications.Fire(StatusListBox, "Could not refresh the editor.", NotificationLabel);
-            }
-        }
 
         private async void SaveToFileButton_Click(object sender, RoutedEventArgs e)
         {
@@ -466,7 +463,7 @@ namespace LInjector.Windows
             {
                 FileName = await TabSystemz.GetCurrentTabTitle(),
                 Title = "Save to File | LInjector",
-                Filter = "Script Files (*.txt;*.lua;*.luau)|*.txt;*.lua;*.luau|All files (*.*)|*.*"
+                Filter = "Script Files (*.txt;*.lua;*.luau)|*.txt;*.lua;*.luau|All files (*.*)|*.*",
             };
 
             if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -516,17 +513,30 @@ namespace LInjector.Windows
         {
             if (IsInfoShown == false)
             {
-                if (IsSettingsShown == true || IsScriptsShown == true) { return; }
+                if (IsScriptsShown == true) { return; }
                 IsInfoShown = true;
-                TabSystemz.Visibility = Visibility.Collapsed;
                 InformationGrid.Visibility = Visibility.Visible;
             }
             else
             {
-
                 IsInfoShown = false;
                 InformationGrid.Visibility = Visibility.Collapsed;
-                TabSystemz.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void ChangeScriptsFolder_Click(object sender, RoutedEventArgs e)
+        {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog
+            {
+                IsFolderPicker = true,
+                Multiselect = false,
+            };
+
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                RegistryHandler.SetValue("ScriptListPath", dialog.FileName);
+                ScriptListPath = dialog.FileName;
+                RefreshScriptList();
             }
         }
 
@@ -546,9 +556,9 @@ namespace LInjector.Windows
             { DebugModeToggle.IsChecked = true; }
             else { DebugModeToggle.IsChecked = false; }
 
-            if (ConfigHandler.discord_rpc)
-            { RPCToggle.IsChecked = true; }
-            else { RPCToggle.IsChecked = false; }
+            if (RPCManager.isEnabled)
+            { RPCToggle.IsChecked = true; enablerpc(); }
+            else { RPCToggle.IsChecked = false; shutdownrpc(); }
 
             if (ConfigHandler.topmost)
             { TopmostToggle.IsChecked = true; }
@@ -605,7 +615,7 @@ namespace LInjector.Windows
 
         // RPC Toggle
 
-        private void RPCToggle_Checked(object sender, RoutedEventArgs e)
+        private void enablerpc()
         {
             ConfigHandler.SetConfigValue("discord_rpc", true);
             ConfigHandler.discord_rpc = true;
@@ -613,13 +623,11 @@ namespace LInjector.Windows
 
             if (!RPCManager.client.IsInitialized)
             {
-
                 RPCManager.InitRPC();
             }
-
         }
 
-        private void RPCToggle_Unchecked(object sender, RoutedEventArgs e)
+        private void shutdownrpc()
         {
             ConfigHandler.SetConfigValue("discord_rpc", false);
             ConfigHandler.discord_rpc = false;
@@ -629,6 +637,16 @@ namespace LInjector.Windows
             {
                 RPCManager.client.Dispose();
             }
+        }
+
+        private void RPCToggle_Checked(object sender, RoutedEventArgs e)
+        {
+            enablerpc();
+        }
+
+        private void RPCToggle_Unchecked(object sender, RoutedEventArgs e)
+        {
+            shutdownrpc();
         }
 
         // TOPMOST TOGGLE
@@ -645,13 +663,6 @@ namespace LInjector.Windows
             ConfigHandler.SetConfigValue("topmost", false);
             ConfigHandler.topmost = false;
             Topmost = false;
-        }
-
-        // TOGGLE SETTINGS
-
-        private void ShiftToNormal(object sender, RoutedEventArgs e)
-        {
-            ToggleControls();
         }
 
         // SAVE TABS TOGGLE

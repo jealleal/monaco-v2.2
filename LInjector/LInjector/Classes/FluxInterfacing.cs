@@ -47,7 +47,7 @@ namespace LInjector.Classes
         private static readonly IntPtr NULL = (IntPtr)0;
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern IntPtr OpenProcess(uint access, bool inhert_handle, int pid);
+        public static extern IntPtr OpenProcess(uint access, bool inhert_handle, int pid);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, IntPtr dwSize,
@@ -187,7 +187,7 @@ namespace LInjector.Classes
                     _ = Notifications.Fire((new MainWindow()).StatusListBox, "LoadLibrary failed.", App.NotificationLabel);
                     break;
                 case Result.ProcNotOpen:
-                    _ = Notifications.Fire((new MainWindow()).StatusListBox, "Couldn't find process. Make sure you have Roblox from the Microsoft Store.", App.NotificationLabel);
+                    _ = Notifications.Fire((new MainWindow()).StatusListBox, "Couldn't find process. Make sure you have the game from the Microsoft Store.", App.NotificationLabel);
                     break;
                 case Result.Unknown:
                     _ = Notifications.Fire((new MainWindow()).StatusListBox, "An unkown error has occurred.", App.NotificationLabel);
@@ -217,8 +217,6 @@ namespace LInjector.Classes
             bool result;
             if (flag)
             {
-                ThreadBox.MsgThread("Inject API First", "Fluxus | API Error", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
                 result = false;
             }
             else

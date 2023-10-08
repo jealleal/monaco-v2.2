@@ -13,8 +13,7 @@ namespace LInjector.Classes
         public static bool splashscreen { get; set; }
         public static bool sizable = false;
         public static bool debug = false;
-        public static bool discord_rpc = true;
-        public static bool options_collapsed = false;
+        public static bool discord_rpc { get; set; }
         public static bool save_tabs = false;
 
 
@@ -28,7 +27,7 @@ namespace LInjector.Classes
                     { "splashscreen", true },
                     { "debug", false },
                     { "topmost", false },
-                    { "discord_rpc", true },
+                    { "discord_rpc", false },
                     { "save_tabs", false }
                 };
 
