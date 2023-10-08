@@ -23,7 +23,7 @@ namespace LInjector.WPF.Classes
         public monaco_api(string Text)
         {
             if (Files.AccountName == "ItzzExcel")
-                this.Source = new Uri($"https://{Files.AccountName.ToLower()}.github.io/LInjector");
+                this.Source = new Uri($"https://{Files.AccountName.ToLower()}.github.io/LInjector/Monaco");
             else if (Files.AccountName == "NotExcelz")
                 this.Source = new Uri($"https://{Files.AccountName.ToLower()}.github.io/LInjector/Monaco");
 
