@@ -1,4 +1,5 @@
-﻿using Microsoft.Web.WebView2.Wpf;
+﻿using LInjector.Classes;
+using Microsoft.Web.WebView2.Wpf;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
@@ -21,7 +22,11 @@ namespace LInjector.WPF.Classes
 
         public monaco_api(string Text)
         {
-            this.Source = new Uri("https://notexcelz.github.io/LInjector/Monaco");
+            if (Files.AccountName == "ItzzExcel")
+                this.Source = new Uri($"https://{Files.AccountName.ToLower()}.github.io/LInjector");
+            else if (Files.AccountName == "NotExcelz")
+                this.Source = new Uri($"https://{Files.AccountName.ToLower()}.github.io/LInjector/Monaco");
+
             this.CoreWebView2InitializationCompleted += monaco_api_CoreWebView2InitializationCompleted;
             this.ToSetText = Text;
         }

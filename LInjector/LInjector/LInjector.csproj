@@ -380,9 +380,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Resources\Internal\Init.lua">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="Resources\Internal\Init.lua" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

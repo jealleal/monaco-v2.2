@@ -107,7 +107,7 @@
                     </Grid>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button Background="Transparent" BorderBrush="Transparent" Content="&#xE921;" Foreground="White" FontSize="10" FontFamily="Segoe MDL2 Assets" Click="MinimizeButton_Click" HorizontalAlignment="Right" VerticalAlignment="Stretch" materialDesign:RippleAssist.IsDisabled="True" />
-                        <Button Background="Transparent" BorderBrush="Transparent" Content="&#xE922;" Foreground="White" FontSize="10" FontFamily="Segoe MDL2 Assets" Click="MaximizeButton_Click" HorizontalAlignment="Right" VerticalAlignment="Stretch" materialDesign:RippleAssist.IsDisabled="True" />
+                        <Button x:Name="MaximizeButton" Background="Transparent" BorderBrush="Transparent" Content="&#xE922;" Foreground="White" FontSize="10" FontFamily="Segoe MDL2 Assets" Click="MaximizeButton_Click" HorizontalAlignment="Right" VerticalAlignment="Stretch" materialDesign:RippleAssist.IsDisabled="True" />
                         <Button Background="Transparent" BorderBrush="Transparent" Content="&#xE8BB;" Foreground="White" FontSize="10" FontFamily="Segoe MDL2 Assets" Click="ExitButton_Click"     HorizontalAlignment="Right" VerticalAlignment="Stretch" materialDesign:RippleAssist.IsDisabled="True" />
                     </StackPanel>
                 </Grid>
@@ -318,7 +318,7 @@
 
                 <!-- GAME CONSOLE COMMUNICATION BEGANS -->
 
-                <Border Background="#141414" BorderThickness="1" Margin="46,2,6,10" CornerRadius="4" Padding="5" Grid.Row="2">
+                <Border Background="#141414" BorderThickness="1" Margin="46,2,6,10" CornerRadius="4" Padding="0" Grid.Row="2">
                     <StackPanel Orientation="Vertical">
                         <ListBox Background="Transparent" BorderThickness="0" Foreground="White" FontFamily="Consolas" x:Name="ConsoleLogList" x:FieldModifier="public" Height="72" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.CanContentScroll="False"
                                  materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True" materialDesign:ScrollViewerAssist.CornerRectangleVisibility="Collapsed">

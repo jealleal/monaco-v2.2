@@ -47,12 +47,12 @@ namespace LInjector.Windows
             if (CheckLatest.IsOutdatedVersion(Files.currentVersion))
             {
                 var outDatedResult = System.Windows.Forms.MessageBox.Show(
-                    "LInjector is outdated, please, re-run LInjector Updating System or download the latest release via LExploits Website.\n" +
+                    "LInjector is outdated, please, re-download LInjector via GitHub or LInjector Webiste.\n" +
                     "Go to LInjector Download Page?",
                     "LInjector | Outdated", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                 if (outDatedResult == System.Windows.Forms.DialogResult.Yes)
                 {
-                    Process.Start("https://lexploits.netlify.app/extra/linjector/download/");
+                    Process.Start("https://lexploits.top/download");
                     CustomCw.Cw("LInjector is outdated", false, "warning");
                 }
             }

@@ -47,7 +47,7 @@ namespace LInjector.Classes
         private static readonly IntPtr NULL = (IntPtr)0;
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern IntPtr OpenProcess(uint access, bool inhert_handle, int pid);
+        public static extern IntPtr OpenProcess(uint access, bool inhert_handle, int pid);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, IntPtr dwSize,

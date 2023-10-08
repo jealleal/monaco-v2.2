@@ -17,7 +17,9 @@ namespace LInjector.Classes
     public static class Files
     {
 
-        public static readonly string currentVersion = "v23.09.2023";
+        public static readonly string currentVersion = "v08.10.2023";
+        public static readonly string AccountName = "ItzzExcel";
+        public const string AccountNamee = "ItzzExcel";
 
         public static readonly string localAppDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         public static readonly string RobloxACFolder = Path.Combine(localAppDataFolder, "Packages", "ROBLOXCORPORATION.ROBLOX_55nm5eh3cm0pr", "AC");
@@ -28,10 +30,11 @@ namespace LInjector.Classes
         public static readonly string desiredDirectoryName = "LInjector";
         public static readonly string ModulePath = "Resources\\libs\\Module.dll";
         public static readonly string savedtabspath = "Resources\\savedtabs";
-        public static readonly string GithubAPI = "https://api.github.com/repos/NotExcelz/LInjector/commits?path={0}&page=1&per_page=1";
-        public static readonly string DLLSURl = "https://raw.githubusercontent.com/NotExcelz/LInjector/master/Redistributables/DLLs";
+        public static readonly string GithubAPI = $"https://api.github.com/repos/{AccountName}/LInjector/commits?path={0}&page=1&per_page=1";
+        public static readonly string DLLSURl = $"https://raw.githubusercontent.com/{AccountName}/LInjector/master/Redistributables/DLLs";
         public static readonly string FluxusAPI = $"{DLLSURl}/FluxteamAPI.dll";
         public static readonly string ModuleAPI = $"{DLLSURl}/Module.dll";
+        public static readonly string InitLua = $"https://raw.githubusercontent.com/{AccountName}/LInjector/master/LInjector/LInjector/Resources/Internal/Init.lua";
     }
 
     public static class Updater
@@ -255,12 +258,17 @@ namespace LInjector.Classes
             {
                 RegistryHandler.SetValue("ScriptListPath", ".\\scripts\\");
             }
+
+            if (!File.Exists($"{Files.autoexecFolder}\\LInjector.lua"))
+            {
+                webClient.DownloadFileAsync(new Uri(Files.InitLua), $"{Files.autoexecFolder}\\LInjector.lua");
+            }
         }
 
         public static void RedownloadModules()
         {
-            var Interfacer = new Uri("https://raw.githubusercontent.com/NotExcelz/LInjector/master/Redistributables/DLLs/FluxteamAPI.dll");
-            var Module = new Uri("https://raw.githubusercontent.com/NotExcelz/LInjector/master/Redistributables/DLLs/Module.dll");
+            var Interfacer = new Uri($"https://raw.githubusercontent.com/{Files.AccountName}/LInjector/master/Redistributables/DLLs/FluxteamAPI.dll");
+            var Module = new Uri($"https://raw.githubusercontent.com/{Files.AccountName}/LInjector/master/Redistributables/DLLs/Module.dll");
 
             if (Directory.Exists("Resources\\libs"))
             {
@@ -274,13 +282,13 @@ namespace LInjector.Classes
 
         public static void DownloadInterfacer()
         {
-            var Interfacer = new Uri("https://raw.githubusercontent.com/NotExcelz/LInjector/master/Redistributables/DLLs/FluxteamAPI.dll");
+            var Interfacer = new Uri($"https://raw.githubusercontent.com/{Files.AccountName}/LInjector/master/Redistributables/DLLs/FluxteamAPI.dll");
             webClient.DownloadFile(Interfacer, "Resources\\libs\\FluxteamAPI.dll");
         }
 
         public static void DownloadModule()
         {
-            var Module = new Uri("https://raw.githubusercontent.com/NotExcelz/LInjector/master/Redistributables/DLLs/Module.dll");
+            var Module = new Uri($"https://raw.githubusercontent.com/{Files.AccountName}/LInjector/master/Redistributables/DLLs/Module.dll");
             webClient.DownloadFile(Module, "Resources\\libs\\Module.dll");
         }
 
@@ -422,7 +430,7 @@ namespace LInjector.Classes
 
     public class CheckLatest
     {
-        private const string owner = "NotExcelz";
+        private const string owner = Files.AccountNamee;
         private const string repo = "LInjector";
 
         public static bool IsOutdatedVersion(string currentVersion)

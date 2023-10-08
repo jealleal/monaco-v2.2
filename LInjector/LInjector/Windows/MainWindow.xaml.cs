@@ -242,8 +242,8 @@ namespace LInjector.Windows
             RefreshScriptList();
             LoadSavedTabs();
             ParseConfig();
-            LogToConsole.Log("Welcome to LInjector.", ConsoleLogList);
-            _ = Notifications.Fire(StatusListBox, "Welcome to LInjector [BETA]", NotificationLabel);
+            LogToConsole.Log("Loaded", ConsoleLogList);
+            _ = Notifications.Fire(StatusListBox, "Welcome to LInjector", NotificationLabel);
         }
 
         private void LoadSavedTabs()
@@ -277,17 +277,16 @@ namespace LInjector.Windows
                     try
                     {
 
-                        _ = Notifications.Fire(StatusListBox, "Called Injection API (Powered by Fluxteam)", NotificationLabel);
                         FluxInterfacing.inject();
                         InternalFunctions.RunInternalFunctions();
                         FunctionWatch.runFuncWatch();
                         if (FluxInterfacing.pid > 0)
                         {
-                            LogToConsole.Log($"Injected to Windows10Universal with PID: {FluxInterfacing.pid}", ConsoleLogList);
+                            LogToConsole.Log($"Injected to Windows10Universal.exe with PID: {FluxInterfacing.pid}", ConsoleLogList);
                         }
                         else
                         {
-                            LogToConsole.Log($"Windows10Universal not detected.", ConsoleLogList);
+                            LogToConsole.Log($"Windows10Universal.exe not detected.", ConsoleLogList);
                         }
                     }
                     catch (Exception ex)
@@ -349,7 +348,7 @@ namespace LInjector.Windows
 
         private void GitHubButton_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://github.com/NotExcelz/LInjector");
+            Process.Start($"https://github.com/${Files.AccountName}/LInjector");
         }
 
         private void DiscordButton_Click(object sender, RoutedEventArgs e)
@@ -408,11 +407,8 @@ namespace LInjector.Windows
                         {
                         }
                     }
-                    else
-                    {
-                        _ = Notifications.Fire(StatusListBox, "No scripts were found.", NotificationLabel);
-                    }
-                } else
+                }
+                else
                 {
                     string scriptfolder = ScriptListPath;
                     object selectedItem = this.ScriptListHolder.SelectedItem;

@@ -47,20 +47,6 @@ To edit the Forms, first compile. For any reason, forms can't load if not compil
 - Set Release x86
 - Build Solution (CTRL + SHIFT + B)
 
-### Arguments (LInjector.exe --arg)
-<pre>
-.\LInjector.exe --metalpipe
-  (Plays the sound of a metal pipe falling)<br>
-.\LInjector.exe --bamboopipe
-  (Plays the sound of a bamboo pipe falling)<br>
-.\LInjector.exe --debug
-  (Shows console)<br>
-.\LInjector.exe --sizable
-  (Makes LInjector application form sizable and dockable)<br>
-.\LInjector.exe --no-splash
-  (Doesn't show splash screen on startup)
-</pre>
-
 ## Why LInjector?
 Well, here are some reasons:
 - It's an open-source project, which ensures the program does not contain malware.
